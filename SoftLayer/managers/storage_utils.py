@@ -1039,10 +1039,7 @@ def prepare_modify_order_object(manager, origin_volume, new_iops, new_tier,
     # Determine the new IOPS or new tier level for the volume, along with
     # the type and prices for the order
     origin_storage_type = origin_volume['storageType']['keyName']
-    if origin_storage_type == 'PERFORMANCE_BLOCK_STORAGE'\
-            or origin_storage_type == 'PERFORMANCE_BLOCK_STORAGE_REPLICANT'\
-            or origin_storage_type == 'PERFORMANCE_FILE_STORAGE'\
-            or origin_storage_type == 'PERFORMANCE_FILE_STORAGE_REPLICANT':
+    if 'PERFORMANCE' in origin_storage_type:
         volume_is_performance = True
         new_iops = _validate_new_performance_iops(
             origin_volume, new_iops, new_size)
@@ -1053,10 +1050,7 @@ def prepare_modify_order_object(manager, origin_volume, new_iops, new_tier,
             find_saas_perform_iops_price(package, new_size, new_iops),
         ]
 
-    elif origin_storage_type == 'ENDURANCE_BLOCK_STORAGE'\
-            or origin_storage_type == 'ENDURANCE_BLOCK_STORAGE_REPLICANT'\
-            or origin_storage_type == 'ENDURANCE_FILE_STORAGE'\
-            or origin_storage_type == 'ENDURANCE_FILE_STORAGE_REPLICANT':
+    elif 'ENDURANCE' in origin_storage_type:
         volume_is_performance = False
         new_tier = _validate_new_endurance_tier(origin_volume, new_tier)
         # Set up the price array for the order

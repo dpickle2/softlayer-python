@@ -5,7 +5,6 @@ import click
 import SoftLayer
 from SoftLayer.CLI import environment
 from SoftLayer.CLI import exceptions
-from SoftLayer import utils
 
 
 CONTEXT_SETTINGS = {'token_normalize_func': lambda x: x.upper()}
@@ -47,34 +46,6 @@ def cli(env, volume_id, new_size, new_iops, new_tier):
     """Modify an existing file storage volume."""
     file_manager = SoftLayer.FileStorageManager(env.client)
     
-    file_volume =     file_manager.get_file_volume_details(volume_id)
-    file_volume = utils.NestedDict(file_volume)
-
-    storage_type = file_volume['storageType']['keyName'].split('_').pop(0)
-    help_message = "For help, try \"slcli file volume-modify --help\""
-
-    if storage_type == 'ENDURANCE':
-        if new_iops is not None:
-            raise exceptions.CLIAbort(
-                'Invalid option --new-iops for Endurance volume. Please use --new-tier instead.')
-
-        if new_size is None and new_tier is None:
-            raise exceptions.CLIAbort(
-                'Option --new-size or --new-tier must be specified for modifying an Endurance volume. \n'+
-                help_message
-            )
-
-    if storage_type == 'PERFORMANCE':
-        if new_tier is not None:
-            raise exceptions.CLIAbort(
-                'Invalid option --new-tier for Performance volume. Please use --new-iops instead.')
-
-        if new_size is None and new_iops is None:
-            raise exceptions.CLIAbort(
-                'Option --new-size or --new-iops must be specified for modifying a Performance volume. \n' +
-                help_message
-            )
-
     if new_tier is not None:
         new_tier = float(new_tier)
 
